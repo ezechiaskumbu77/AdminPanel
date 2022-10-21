@@ -1,0 +1,69 @@
+<div class="navbar navbar-expand-md navbar-light bg-white">
+  <span class="navbar-text mr-4">
+    <span class="text-primary">Commades</span> /
+    <span class="text-primary">{{category$|async}}</span>
+    <span *ngIf="(selectedUser$|async) != null" class="text-muted"> /
+      {{(selectedUser$|async)._id|codeFormater}}</span>
+  </span>
+  <div class="btn-group mr-auto" role="group" aria-label="Basic example">
+    <button #agreed autofocus="autofocus" (click)="setUserCategory('agreed')" type="button" data-toggle="tooltip"
+      title="Agréées" class="btn btn-secondary"><span class="material-icons">check_circle</span></button>
+    <button #pending type="button" (click)="setUserCategory('pending')" data-toggle="tooltip" title="En attente"
+      class="btn btn-secondary"><span class="material-icons">hourglass_empty</span></button>
+    <button #rejected type="button" (click)="setUserCategory('rejected')" data-toggle="tooltip" title="Rejettées"
+      class="btn btn-secondary"><span class="material-icons">thumb_down_alt</span></button>
+    <button #banned type="button" (click)="setUserCategory('banned')" data-toggle="tooltip" title="Bannies"
+      class="btn btn-secondary"><span class="material-icons">remove_circle</span></button>
+  </div>
+  <ul class="nav ml-4">
+    <li class="nav-item mr-1">
+      <button type="button" (click)="openCommercialDialog()" class="btn btn-primary">Nouveau commercial</button>
+
+    </li>
+  </ul>
+</div>
+<div class="two-nav-content bg-color overflow-auto">
+  <table *ngIf="(users$|async)?.length>0" class="table table-striped table-hover tableFixHead">
+    <thead>
+      <tr class="table-primary">
+        <th scope="col">Code</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Role</th>
+        <th scope="col">Mobile</th>
+        <th scope="col">E-mail</th>
+        <th scope="col">Office</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr (click)="select(user._id)"
+        [ngClass]="{'table-success': user._id.localeCompare((selectedUser$|async)?._id)==0}"
+        *ngFor="let user of users$|async">
+        <td>{{user._id|codeFormater}}</td>
+        <td>{{user.name}}</td>
+        <td>{{user.role}}</td>
+        <td>{{(user.phone)!=undefined?(user.phone):'- -'}}</td>
+        <td>{{(user.email)!=undefined?(user.email):'- -'}}</td>
+        <td><span *ngIf="(user|remoteOfficeByUserId|async)?.name!=undefined"> <span
+              class="material-icons text-muted position-relative fit-text-icon">{{user.role|officeCategoryToIcon}}</span>
+            <span
+              class="material-icons text-muted position-relative fit-text-icon">{{(user|remoteOfficeByUserId|async)?.status|collaborationStatusToIcon}}</span>
+            • </span><span
+            [ngClass]="{'text-primary': (user|remoteOfficeByUserId|async)?.name!=undefined &&  (user|remoteOfficeByUserId|async)?.name?.localeCompare('PPC') != 0}"><span
+              *ngIf="(user|remoteOfficeByUserId|async) != undefined && (user|remoteOfficeByUserId|async)?.name?.localeCompare('PPC') != 0">@</span>{{(user|remoteOfficeByUserId|async)?.name
+            != undefined?(user|remoteOfficeByUserId|async)?.name:'- -'}}</span>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="(users$|async)?.length==0"
+    class="card mx-auto text-muted align-middle vertically-aligned-partially-box bg-light mb-3"
+    style="max-width: 18rem;">
+    <div class="card-body">
+      <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+          style="top: 6px">block</span> Aucun élément à afficher</h6>
+
+    </div>
+  </div>
+</div>

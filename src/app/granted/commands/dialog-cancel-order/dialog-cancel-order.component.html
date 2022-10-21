@@ -1,0 +1,15 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">Suppression de commande</h4>
+  <button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p> <strong>Voulez-vous vraiment annuler la comande {{order._id|codeFormater}}</strong> </p>
+  <p>Si un paiement a été déjà effectué un remboursement sera initié
+  </p>
+</div>
+<div class="modal-footer">
+  <button type="button" ngbAutofocus class="btn btn-outline-secondary" (click)="modal.close(false)">Cancel</button>
+  <button type="button" class="btn btn-danger" (click)="cancelOrder(order)">Je confirme</button>
+</div>

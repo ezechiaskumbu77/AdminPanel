@@ -1,0 +1,36 @@
+<div class="navbar navbar-expand-md navbar-light bg-white border-bottom">
+  <span class="navbar-text mr-4">
+    <span class="text-primary">Shops</span> /
+    <span class="text-muted">{{(shopId$|async)|codeFormater}}</span>
+
+  </span>
+
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="['/granted/shops/'+(shopId$|async)+'/summary']" routerLinkActive="disabled"
+        href="#">Sommaire</a>
+    </li>
+    <li class="nav-item">
+      <a [routerLink]="['/granted/shops/'+(shopId$|async)+'/sales']" routerLinkActive="disabled" class="nav-link"
+        href="#">Appro-Vente</a>
+    </li>
+
+  </ul>
+
+
+  <!--
+<ul class="nav mt-2">
+    <ng-container *ngIf="((shopId$|async)|remoteShopFromId|async) as shop">
+      <li *ngIf="
+    !shop.IsPayed && shop.status == 'pending'
+    " class="nav-item mr-1">
+        <button (click)="cancelShop(shop)" type="button" class="btn btn-danger btn-sm">Annuler</button>
+      </li>
+    </ng-container>
+
+  </ul>
+ -->
+
+
+</div>
+<router-outlet></router-outlet>

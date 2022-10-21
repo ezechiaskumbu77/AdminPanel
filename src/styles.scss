@@ -1,0 +1,225 @@
+$zindex-dropdown: 1000 !default;
+$zindex-sticky: 1020 !default;
+$zindex-fixed: 1030 !default;
+$zindex-modal-backdrop: 1040 !default;
+$zindex-modal: 1050 !default;
+$zindex-popover: 1060 !default;
+$zindex-tooltip: 1070 !default;
+$zindex-table-title: 950 !default;
+$zindex-table-content: 900 !default;
+
+/* You can add global styles to this file, and also import other style files */
+
+$nav-height: "72px";
+$bg-color: rgb(243, 243, 240);
+$primary-light: #eeaaaa;
+//content
+body {
+  font-size: 0.9em !important;
+}
+
+#login-logo {
+  height: 120px;
+  width: 158px;
+}
+
+#logo-ppc-navbar {
+  height: 48px;
+}
+
+#logo-centerer {
+  display: inline-block;
+  height: 56px;
+  width: 120px;
+}
+
+#name {
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+  border: 2px white solid;
+}
+
+#badge-notifs {
+  right: 12px;
+}
+
+.two-nav-content {
+  height: calc(100vh - 2 *#{$nav-height});
+}
+
+.content-dialog-big {
+  height: 50vh;
+}
+
+.one-nav-content {
+  height: calc(100vh - #{$nav-height});
+}
+
+.bg-color {
+  background-color: $bg-color !important;
+}
+
+.progress {
+  height: 4px !important;
+  z-index: $zindex-tooltip;
+}
+
+.tableFixHead {
+  overflow-y: auto;
+  height: 100px;
+}
+
+.tableFixHead thead th {
+  position: sticky;
+  top: 0;
+  z-index: $zindex-table-title;
+}
+
+/* Just common table stuff. Really. */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 8px 16px;
+}
+
+th {
+  background: $bg-color;
+}
+
+.vertically-aligned-partially-box {
+  top: 30%;
+  transform: translate(0px, -50%);
+}
+
+.vertically-aligned-box {
+  top: 50%;
+  transform: translate(0px, -50%);
+}
+
+.fit-text-icon {
+  font-size: 18px !important;
+  position: relative;
+  top: 3px;
+  z-index: $zindex-table-content;
+}
+
+.fit-text-icon-nd {
+  font-size: 18px !important;
+  z-index: $zindex-table-content;
+}
+
+.fit-text-icon-nd-min {
+  font-size: 10px !important;
+  z-index: $zindex-table-content;
+}
+
+.card-places {
+  max-height: 64px;
+  overflow-y: scroll;
+}
+
+.required:after {
+  color: #d00;
+  content: "*";
+  position: relative;
+  margin-left: 2px;
+  top: -2px;
+}
+
+.fit-to-text-image {
+  height: 18px;
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+*:focus {
+  outline: none !important;
+}
+
+.preview-image-palceholder {
+  font-size: 200px !important ;
+  background-color: $bg-color !important;
+  text-align: center;
+  height: 264x;
+  padding: 32px;
+  width: 264px;
+}
+
+/*
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  background-color: $bg-color !important;
+  border-bottom: $bg-color !important;
+}
+
+.nav-tabs {
+  border-bottom: 0px rgba(255, 255, 255, 0) !important;
+  position: relative;
+  top: 9px;
+}
+*/
+
+.filter-bar {
+  height: 48px;
+}
+
+.five-nav-content {
+  height: calc(100vh - 5 *#{$nav-height});
+}
+
+.bottom-bar {
+  height: 48px;
+  bottom: 0;
+  z-index: $zindex-table-title;
+}
+
+.table-small-text {
+  font-size: 0.7em;
+}
+
+.table-size-forced-seven {
+  min-height: calc(100vh - 5 *#{$nav-height}) !important;
+}
+
+.margin-top-place-holder {
+  margin-top: 72px;
+}
+
+.custom-day {
+  text-align: center;
+  padding: 0.185rem 0.25rem;
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+}
+.custom-day.focused {
+  background-color: #e6e6e6;
+}
+.custom-day.range,
+.custom-day:hover {
+  background-color: red;
+  color: white;
+}
+.custom-day.faded {
+  background-color: $primary-light;
+}
+
+.ngb-dp-weekday {
+  color: red !important;
+}

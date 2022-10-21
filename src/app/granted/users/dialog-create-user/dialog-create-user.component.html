@@ -1,0 +1,43 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Nouveau commercial</h4>
+    <button type="button" (click)="modal.dismiss()" class="close" aria-label="Close button"
+        aria-describedby="modal-title">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" [formGroup]="userForm">
+    <label class="required" for="basic-url">E-mail</label>
+    <input type="email" formControlName="email" class="form-control mb-2" id="basic-url" aria-describedby="basic-addon3">
+    <label class="required" for="basic-url">Mot de passe</label>
+    <input type="password" formControlName="password" class="form-control mb-2" id="basic-url" aria-describedby="basic-addon3">
+    <label class="required" for="basic-url">Téléphone</label>
+    <input type="tel" formControlName="phone" class="form-control mb-2" id="basic-url" aria-describedby="basic-addon3">
+    <label class="required" for="basic-url">Nom</label>
+    <input type="text" formControlName="name" class="form-control mb-2" id="basic-url" aria-describedby="basic-addon3">
+    
+    <div class="form-row mb-2">
+        <div class="input-group col">
+            <div class="input-group-prepend">
+                <label class="required input-group-text" for="basic-url">Dte nce.</label>
+            </div>
+            <input formControlName="birthDay" type="date" placeholder="JJ/MM/AAAA" class="form-control">
+        </div>
+        <div class="input-group col">
+            <div class="input-group-prepend">
+                <label class="required input-group-text" for="basic-url">Sex</label>
+            </div>
+            <select class="form-select form-control" formControlName="sex" aria-label="Default select example">
+                <option value="M" selected>M</option>
+                <option value="F">F</option>
+            </select>
+        </div>
+    </div>
+    <label class="required" for="basic-url">Adresse</label>
+    <input type="text" formControlName="address" class="form-control mb-2" id="basic-url" aria-describedby="basic-addon3">
+</div>
+<div class="modal-footer">
+    <button type="button" ngbAutofocus class="btn btn-outline-secondary" (click)="modal.dismiss()">Abandonner</button>
+    <button role="button" (click)="createCommercial()"
+        [attr.disabled]="userForm.valid  ? null: true"
+        type="button" class="btn btn-primary">Valider</button>
+</div>

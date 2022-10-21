@@ -1,0 +1,120 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Nouvelle zone</h4>
+    <button type="button" (click)="modal.dismiss()" class="close" aria-label="Close button" aria-describedby="modal-title">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body" [formGroup]="zoneForm">
+    <label class="required" for="basic-url">Nom de la zone</label>
+    <input type="text" formControlName="name" class="form-control mb-2" id="basic-url" aria-describedby="basic-addon3">
+
+    <label class="required" for="basic-url">Prix des produits dans la zone</label>
+    <div class="form-row mb-2">
+        <div class="input-group col">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+          <img src="../../../../assets/images/surcast.png" style="height: 24px" alt="">
+        </span>
+            </div>
+            <input formControlName="priceSurcast" type="number" placeholder="prix Surecast" class="form-control">
+            <div class="input-group-append">
+                <button disabled class="btn btn-outline-secondary text-muted" type="button">CDF</button>
+            </div>
+        </div>
+        <div class="input-group col">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+          <img src="../../../../assets/images/surcem.png" style="height: 24px" alt="">
+        </span>
+            </div>
+            <input formControlName="priceSurcem" type="number" placeholder="prix Surecem" class="form-control">
+            <div class="input-group-append">
+                <button disabled class="btn btn-outline-secondary text-muted" type="button">CDF</button>
+            </div>
+        </div>
+    </div>
+    <span class="card-text required">Lieux inscrits dans la zone</span>
+    <div class="card card-places mb-4 w-100" style="width: 18rem;">
+        <div class="card-body">
+            <p *ngIf="selectedPlaces.length > 0; else noSelectedPlaces" class="card-text">
+                <span *ngFor="let sp of selectedPlaces" class="badge d-inline-flex align-items-center badge-pill badge-primary mr-1 mb-1">
+          {{sp.name}} <span role="button" (click)="removeFromSelected(sp)"
+            class="ml-1  material-icons fit-text-icon-dc">cancel</span> </span>
+            </p>
+            <ng-template #noSelectedPlaces>
+                <p class="text-muted">
+                    <span class="material-icons fit-text-icon">block</span>
+                    <span class="ml-2">Aucune place séléctionnée pour l'instant</span>
+                </p>
+            </ng-template>
+        </div>
+    </div>
+    <p><strong>Ajoutez les entités géographiques à inclure à la zone</strong></p>
+    <p>Commencez par circonscrire la zone par les entitées de premier et second ordre
+        <span class="text-muted">(Province, district...)</span>
+    </p>
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">
+        <img src="../../../../assets/images/drc-flag.svg" style="height: 24px" alt="">
+      </span>
+        </div>
+        <input type="text" aria-label="First name" disabled value="Rép. Dém. du Congo" class="form-control">
+    </div>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Prov. & Vle/Dist.</span>
+        </div>
+        <select [attr.disabled]="(networkCall$|async)? true: null" [formControl]="province" class="custom-select">
+      <option *ngFor="let prov of provinces$|async" [ngValue]="prov">
+        {{prov.name}}
+      </option>
+
+    </select>
+        <select [attr.disabled]="((networkCall$|async) || province.value== undefined)? true : null" [formControl]="district" class="custom-select">
+      <option [ngValue]="dist" *ngFor="let dist of districts$|async">{{dist.name}}</option>
+    </select>
+    </div>
+    <div *ngIf="district.value != undefined && district.value != undefined" class="input-group mt-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Autre</span>
+        </div>
+        <select [attr.disabled]="(('0'|townsFromProvince:'network'|async) != null  || (networkCall$|async  )) ? true: null" [formControl]="town" class="custom-select">
+      <ng-container *ngFor="let tn of towns$|async">
+        <option [attr.disabled]="alreadySelected(tn)? true: null"
+          *ngIf="tn.code|townsFromProvince:'data'|async as subPlaces; else chargement" [ngValue]="{
+        place: tn,
+        children: subPlaces
+      }">
+          {{tn.name}} <span style="float: right !important" *ngIf="subPlaces.length > 0; else checkMark"
+            class="text-muted">
+            <span style="color: red !important"> ► </span>
+            ({{subPlaces.length}})
+          </span>
+          <ng-template #checkMark><span> ✅</span></ng-template>
+        </option>
+        <ng-template #chargement>Chargement</ng-template>
+      </ng-container>
+    </select>
+    </div>
+
+    <small *ngIf="('0'|townsFromProvince:'count'|async) >0 " id="emailHelp" class="form-text">Veuillez
+    patienter <span class="text-muted"> (processus: {{ ('0'|townsFromProvince:'count'|async)}} )
+
+    </span></small>
+
+    <div *ngIf="(town.value != undefined && (places$|async)?.length > 0)" class="input-group mt-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">...autre</span>
+        </div>
+        <select [attr.disabled]="(networkCall$|async)? true : null" [formControl]="place" class="custom-select">
+      <option [attr.disabled]="alreadySelected(place)? true: null" [ngValue]="place"
+        *ngFor="let place of places$|async">
+        {{place.name}}</option>
+    </select>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" ngbAutofocus class="btn btn-outline-secondary" (click)="modal.dismiss()">Abandonner</button>
+    <button role="button" (click)="createZone()" [attr.disabled]="(zoneForm.valid && selectedPlaces.length > 0 && !(networkCall$| async)) ? null: true" type="button" class="btn btn-primary">Valider</button>
+</div>

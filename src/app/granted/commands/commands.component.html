@@ -1,0 +1,172 @@
+<div class="navbar navbar-expand-md navbar-light bg-white">
+  <span class="navbar-text mr-4">
+    <span class="text-primary">Commades</span> /
+    <span class="text-primary">{{category$|async}}</span>
+    <span *ngIf="(selectedOrder$|async) != null" class="text-muted"> /
+      {{(selectedOrder$|async)._id|codeFormater}}</span>
+  </span>
+  <div class="btn-group mr-auto" role="group" aria-label="Basic example">
+    <button #pending autofocus="autofocus" (click)="setOrderscategory('pending')" type="button" placement="bottom"
+      ngbTooltip="En attente" triggers="hover" class="btn btn-secondary"><span
+        class="material-icons">hourglass_empty</span></button>
+    <button #accepted type="button" (click)="setOrderscategory('accepted')" placement="bottom"
+      ngbTooltip="Acceptées (Att. Livr.)" triggers="hover" class="btn btn-secondary"><span
+        class="material-icons">check_circle</span></button>
+    <button #shiped type="button" (click)="setOrderscategory('shiped')" placement="bottom" ngbTooltip="En route"
+      triggers="hover" class="btn btn-secondary"><span class="material-icons">directions_boat</span></button>
+    <button #delivered type="button" (click)="setOrderscategory('delivered')" placement="bottom" ngbTooltip="Livrées"
+      triggers="hover" class="btn btn-secondary"><span class="material-icons">sentiment_satisfied_alt</span></button>
+    <button #issue type="button" (click)="setOrderscategory('issue')" placement="bottom" ngbTooltip="Litigieuses"
+      triggers="hover" class="btn btn-secondary"><span class="material-icons">warning</span></button>
+    <button #canceled type="button" (click)="setOrderscategory('canceled')" placement="bottom" ngbTooltip="Annullées"
+      triggers="hover" class="btn btn-secondary"><span class="material-icons">delete_outline</span></button>
+  </div>
+  <ul class="nav mt-2">
+
+    <ng-container *ngIf="selectedOrder$|async as order">
+
+      <li class="nav-item mr-1">
+        <button [routerLink]="'./'+order._id" type="button" class="btn btn-secondary btn-sm">Détails</button>
+      </li>
+
+      <li *ngIf="((category$|async)=='pending'||(category$|async)=='accepted')" class="nav-item mr-1">
+        <button (click)="assignOrderToDelivery(order)" type="button" class="btn btn-success btn-sm">
+          {{(category$|async)=='pending'? 'Assigner à un liv.':'Changer de liv.'}}
+        </button>
+
+      </li>
+    </ng-container>
+
+    <ng-container *ngIf=" (selectedOrder$|async) as order">
+      <li *ngIf=" ((category$|async)=='pending' && !order.IsPayed)" class="nav-item mr-1">
+        <button (click)="cancelOrder(order)" type="button" class="btn btn-danger btn-sm">Annuler</button>
+      </li>
+    </ng-container>
+  </ul>
+</div>
+<div class="two-nav-content bg-color overflow-auto">
+  <table *ngIf="(orders$|async)?.length>0" class="table table-striped table-hover tableFixHead">
+    <thead>
+      <tr class="table-primary">
+        <th scope="col">Code</th>
+        <th scope="col">Shop</th>
+        <th *ngIf="(category$|async) == 'pending'">Date de commande</th>
+        <th *ngIf="(category$|async) == 'accepted'">Date d'acceptation</th>
+        <th *ngIf="(category$|async) == 'accepted'">Livreur</th>
+        <th class="text-center" scope="col">Produits</th>
+        <th class="text-center" scope="col">Pmt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr (click)="select(order._id)"
+        [ngClass]="{'table-success': order._id.localeCompare((selectedOrder$|async)?._id)==0}"
+        *ngFor="let order of orders$|async">
+        <td>{{order._id|codeFormater}}</td>
+        <td>
+          <a class="text-primary">
+            @{{order.shop.name}}
+          </a>
+        </td>
+        <td *ngIf="(category$|async) == 'pending'">
+          <ng-container *ngIf="((category$|async) !=undefined) && ((category$|async)=='pending')">
+            <ng-container *ngIf="order.WhenMade|commandDurationToIcon:'30':'60'|async as iconSet">
+              <span [ngClass]="[iconSet.color, iconSet.color=='badge-danger'? 'blink':'']"
+                class="badge d-inline-flex align-items-center badge-pill mr-1 mb-1">
+                <span class="mr-1  material-icons fit-text-icon-nd-min">{{iconSet.icon}}</span> {{iconSet.minutes}} mins
+
+
+              </span>
+            </ng-container>
+
+          </ng-container>
+          {{order.WhenMade|date:'d MMM yyy, HH:mm':'Africa/Kinshasa'}}
+        </td>
+        <td *ngIf="(category$|async) == 'accepted'">
+          <ng-container *ngIf="((category$|async) !=undefined) && ((category$|async)=='accepted')">
+            <ng-container *ngIf="getAcceptationFromOrder(order)|commandDurationToIcon:'30':'60'|async as iconSet">
+              <span [ngClass]="[iconSet.color, iconSet.color=='badge-danger'? 'blink':'']"
+                class="badge d-inline-flex align-items-center badge-pill mr-1 mb-1">
+                <span class="mr-1  material-icons fit-text-icon-nd-min">{{iconSet.icon}}</span> {{iconSet.minutes}} mins
+              </span>
+            </ng-container>
+
+          </ng-container>
+          {{getAcceptationFromOrder(order)|date:'d MMM yyy, HH:mm':'Africa/Kinshasa'}}
+        </td>
+        <td *ngIf="(category$|async) == 'accepted'">
+
+          <span
+            *ngIf="((order._id|remoteDeliveryFromOrderId|async)?.DeliverdBy?.userID|remoteUserFromId|async) as deliveryBoyUser; else loading"
+            class="text-primary" role="button">
+            <ng-container
+              *ngIf="(order._id|remoteDeliveryFromOrderId|async)?.accepted == null ||(order._id|remoteDeliveryFromOrderId|async)?.accepted == undefined ">
+              <ng-container
+                *ngIf="(order._id|remoteDeliveryFromOrderId|async)?.whenAssigned|commandDurationToIcon:'30':'60'|async as iconSet">
+                <span [ngClass]="[iconSet.color, iconSet.color=='badge-danger'? 'blink':'']"
+                  class="badge d-inline-flex align-items-center badge-pill mr-1 mb-1">
+                  <span class="mr-1  material-icons fit-text-icon-nd-min">{{iconSet.icon}}</span> {{iconSet.minutes}}
+                  mins
+                </span>
+
+              </ng-container>
+            </ng-container>
+
+            @{{deliveryBoyUser.name}}
+            <ng-container *ngIf="(order._id|remoteDeliveryFromOrderId|async)?.accepted!= undefined">
+              <span *ngIf="((order._id|remoteDeliveryFromOrderId|async)?.accepted); else notAccepted"
+                class="material-icons text-success fit-text-icon">
+                check_circle
+              </span>
+
+              <ng-template #notAccepted>
+                <span class="material-icons text-danger fit-text-icon">
+                  cancel
+                </span>
+              </ng-template>
+            </ng-container>
+
+          </span>
+
+        </td>
+        <td class="text-center">
+          <span *ngIf="order._id|remotePoductItemsFomOrderId|async as orderItems; else loadingProducts">
+            <span *ngIf="orderItems.length > 0; else noProduct">
+              <span *ngFor="let orderItem of orderItems; let i=index">
+
+                <span class="ml-1 mr-1" *ngIf="i>0">•</span>
+                <img class="fit-to-text-image mr-1" [src]="orderItem.product.name|productNameToProductImage" alt="">
+                <span class="text-muted">{{orderItem.product.name}}:</span> {{orderItem.quantity+'x'+orderItem.price}}
+              </span>
+              <small class="text-muted"><i> CDF</i></small>
+            </span>
+            <ng-template #noProduct>
+              <span>- -</span>
+            </ng-template>
+          </span>
+          <ng-template #loadingProducts>
+            <span class="text-muted">chargement...</span>
+          </ng-template>
+        </td>
+        <td [ngClass]="order.IsPayed?'text-success':'text-muted'" class="text-center"><span
+            class="material-icons">{{order.paymentMethode|paiementMethodToIcon}}</span></td>
+
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="(orders$|async)?.length==0"
+    class="card mx-auto text-muted align-middle vertically-aligned-partially-box bg-light mb-3"
+    style="max-width: 18rem;">
+    <div class="card-body">
+      <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+          style="top: 6px">block</span> Aucun élément à afficher</h6>
+
+    </div>
+  </div>
+  <ng-template #loading> <span class="text-muted">Chargement</span>
+
+  </ng-template>
+  <ng-template #noItem> <span class="text-muted">- -</span>
+
+  </ng-template>
+</div>

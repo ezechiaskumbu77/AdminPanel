@@ -1,0 +1,84 @@
+<div class="two-nav-content bg-color overflow-auto" *ngIf="((shopId$|async)|remoteShopFromId|async) as shop">
+
+  <h4 class="m-3 mt-4">Approvisionnements et ventes du Shop <span
+      class="badge badge-success">{{(shopId$|async)|codeFormater}}</span>
+  </h4>
+  <div class="row m-1">
+
+    <div class="col">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" role="button" [class.active]="view=='sales'" (click)="view='sales'">Ventes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" [class.active]="view=='appros'"
+            (click)="view='appros'">Approvisionnements</a>
+        </li>
+      </ul>
+      <ng-container *ngIf="view=='sales'">
+        <ng-container *ngIf="shopId$|async as shopId">
+          <app-shop-sales-all [shopId]="shopId"></app-shop-sales-all>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="view=='appros'">
+        <ng-container *ngIf="shopId$|async as shopId">
+          <app-shop-appros-all [shopId]="shopId"></app-shop-appros-all>
+        </ng-container>
+      </ng-container>
+
+    </div>
+
+  </div>
+
+
+
+  <ng-template #loading> <span class="text-muted">Chargement</span>
+
+  </ng-template>
+  <ng-template #noItem> <span class="text-muted">- -</span>
+
+  </ng-template>
+
+  <ng-template #blockLoadingSpinner>
+    <div class="spinner-border text-secondary m-4" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </ng-template>
+
+  <ng-template #noDataBlock>
+    <div class="card mx-auto text-muted align-middle vertically-aligned-partially-box bg-light mb-3"
+      style="max-width: 18rem;">
+      <div class="card-body">
+        <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+            style="top: 6px">block</span> Aucun élément à afficher</h6>
+
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #noHoraire>
+    <div class="card mx-auto text-muted align-middle  bg-light m-4" style="max-width: 18rem;">
+      <div class="card-body">
+        <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+            style="top: 6px">event_busy</span>
+          Aucun horaire rensigné</h6>
+
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #noMap>
+    <div class="card mx-auto shadow-sm text-muted align-middle vertically-aligned-box bg-light mb-3"
+      style="max-width: 18rem;">
+      <div class="card-body">
+        <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+            style="top: 6px">layers_clear</span> Carthographie indisponible</h6>
+
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noShopImage>
+    <span
+      class="material-icons text-muted preview-image-palceholder img-thumbnail mt-3 ml-3 mb-3 float-right">store</span>
+  </ng-template>
+</div>

@@ -1,0 +1,7 @@
+POST https://admin.ppc-drc.com/api/v1/auth/login
+content-type: application/json
+
+{
+  "email":"moya@gmail.com",
+  "password":"123456"
+}

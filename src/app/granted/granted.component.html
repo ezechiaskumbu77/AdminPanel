@@ -1,0 +1,92 @@
+<div class="container-fluid no-gutters">
+
+  <div class="row ">
+    <div class="w-100">
+      <nav class="navbar navbar-dark navbar-expand-md bg-primary">
+        <span class="navbar-brand text-center bg-white mr-2" id="logo-centerer">
+
+          <img src="../../assets/images/ppc-logo-hor.jpeg" id="logo-ppc-navbar" alt="">
+
+        </span>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a [routerLinkActive]="'active'" routerLink="./dashboard" class="nav-link">Tableau de
+                bord<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLinkActive]="'active'" routerLink="./commands">Commandes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLinkActive]="'active'" routerLink="./shops" href="#">Shops</a>
+            </li>
+            <li ngbDropdown class="nav-item">
+              <a class="nav-link dropdown-item" ngbDropdownToggle class="nav-link" id="navbarDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Livraison
+              </a>
+              <div ngbDropdownMenu aria-labelledby="navbarDropdown">
+                <a [routerLinkActive]="'active'" routerLink="./delivery-corps" ngbDropdownItem
+                  class="dropdown-item">Entreprises
+                  de livraison</a>
+                <div class="dropdown-divider"></div>
+                <a [routerLinkActive]="'active'" routerLink="./delivery-boys" ngbDropdownItem
+                  class="dropdown-item">Livreurs</a>
+                <div class="dropdown-divider"></div>
+                <a [routerLinkActive]="'active'" routerLink="./delivery-cars" ngbDropdownItem
+                  class="dropdown-item">Flotte de
+                  livraison</a>
+              </div>
+            </li>
+            <li ngbDropdown class="nav-item dropdown">
+              <a ngbDropdownToggle class="nav-link dropdown-toggle" id="navbarDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Utilisateurs
+              </a>
+              <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" [routerLinkActive]="'active'" routerLink="./users" ngbDropdownItem>Gestion des
+                  <strong>utilisateurs</strong></a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item"  [routerLinkActive]="'active'"  ngbDropdownItem>Gestion des
+                  <strong>plaintes</strong></a>
+              </div>
+            </li>
+            <li ngbDropdown class="nav-item">
+              <a class="nav-link dropdown-item" ngbDropdownToggle class="nav-link" id="navbarDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Parametres
+              </a>
+              <div ngbDropdownMenu aria-labelledby="navbarDropdown">
+                <a [routerLinkActive]="'active'" routerLink="./zones" ngbDropdownItem class="dropdown-item">Gestion des
+                  zones</a>
+                <div class="dropdown-divider"></div>
+                <a ngbDropdownItem class="dropdown-item">Parametres divers</a>
+              </div>
+            </li>
+            <!--
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                        </li>
+                        -->
+          </ul>
+
+          <span class="navbar-text"><span class="text-center bg-dark mr-2"
+              id="name">{{(logedInUser$|async)?.name?.substring(0,1)}}</span><span id="badge-notifs"
+              class="badge badge-pill badge-success position-relative">13</span>
+            <button (click)="logout()" type="button" class="btn btn-dark"><span
+                class="material-icons">exit_to_app</span></button></span>
+        </div>
+
+      </nav>
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+</div>

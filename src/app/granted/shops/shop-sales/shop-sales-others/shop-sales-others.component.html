@@ -1,0 +1,80 @@
+<div class="bg-white d-flex flex-row align-items-center filter-bar border-left border-right">
+  <div class="col-4 text-right">Produit <span class="text-muted">(Autres)</span> :</div>
+  <div class="col-8"><select [formControl]="selectedProductOthers" class="custom-select">
+      <option selected [value]="null">Tous les produits</option>
+      <option *ngFor="let shopProduct of shopProducts$|async" [value]="shopProduct._id">{{shopProduct.name}}
+      </option>
+    </select>
+  </div>
+</div>
+
+<div class="five-nav-content bg-white border-left border-right border-bottom overflow-auto position-relative">
+  <div class="table-size-forced-seven">
+    <ng-container *ngIf="(shopSales$|async) as shopSales; else blockLoadingSpinner">
+      <table *ngIf="shopSales.length>0; else noItemBlock"
+        class="table table-striped table-small-text table-hover tableFixHead">
+        <thead>
+          <tr class="table-secondary">
+            <th scope="col">Code</th>
+            <th scope="col">Date</th>
+            <th>Produit</th>
+            <th>Qté</th>
+            <th>PU</th>
+            <th>Remise</th>
+            <th class="text-center" scope="col">PT</th>
+            <th>Dev</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tbody>
+          <tr *ngFor="let shopSale of shopSales">
+            <td>{{shopSale._id|codeFormater}}</td>
+            <td>{{shopSale.date|date:'dd MMM'}}</td>
+            <td>
+              <ng-container *ngIf="(shopSale.productStock|remoteProductStockById|async) as shopProduct; else loading">
+                {{shopProduct.name}}
+              </ng-container>
+
+            </td>
+            <td>{{shopSale.number}}</td>
+            <td>{{shopSale.price}}</td>
+            <td>{{shopSale.discount?shopSale.discount:0 }}</td>
+            <td>{{shopSale.price * shopSale.number - (shopSale.discount?shopSale.discount:0)}}</td>
+            <td>{{shopSale.deviseType}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+  </div>
+
+  <div class="position-sticky bottom-bar w-100 table-secondary d-flex flex-row-reverse align-items-center ">
+    <h6 class="mr-3">
+      <span><span class="text-muted">Total <small>CDF</small>: </span> {{shopSales$|async|totalSales:'fc'}}</span> •
+      <span><span class="text-muted">Total <small>USD</small>: </span> {{shopSales$|async|totalSales:'usd'}}</span>
+    </h6>
+  </div>
+  <ng-template #loading> <span class="text-muted">Chargement</span>
+
+  </ng-template>
+  <ng-template #noItem> <span class="text-muted">- -</span>
+
+  </ng-template>
+
+  <ng-template #noItemBlock>
+    <div
+      class="card margin-top-place-holder mx-auto text-muted align-middle vertically-aligned-partially-box bg-light mb-3"
+      style="max-width: 18rem;">
+      <div class="card-body">
+        <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+            style="top: 6px">block</span> Aucun élément à afficher</h6>
+
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #blockLoadingSpinner>
+    <div class="spinner-border text-secondary m-4" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </ng-template>
+</div>

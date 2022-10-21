@@ -1,0 +1,348 @@
+<div class="two-nav-content bg-color overflow-auto" *ngIf="((shopId$|async)|remoteShopFromId|async) as shop">
+
+  <h4 class="m-3 mt-4">Détails du Shop <span class="badge badge-success">{{(shopId$|async)|codeFormater}}</span>
+  </h4>
+  <div class="row m-1">
+
+    <div class="col">
+      <div class="card shadow-sm">
+        <div class="card-body border-bottom">
+          <h5 class="card-title text-center">Détails généraux</h5>
+
+        </div>
+        <div class="row">
+          <div class="col">
+
+            <img *ngIf="shop.imageList?.length> 0; else noShopImage" [src]="shop.imageList[0]" alt="Shop preview"
+              class="img-thumbnail w-75 mt-3 ml-3 mb-3 float-right">
+          </div>
+          <div class="col">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-left align-items-baseline border-0">
+                <span class="text-muted mr-1">Nom:</span>
+                <h6 class="text-muted">{{shop.name}}</h6>
+              </li>
+              <li class="list-group-item d-flex justify-content-left align-items-baseline border-0">
+                <span class="text-muted mr-1">Adresse:</span>
+                <span>
+                  <h6>{{shop.address}}</h6>
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-left align-items-baseline border-0">
+                <span class="text-muted mr-1">Owner:</span>
+                <span>
+                  <h6 class="text-primary">
+
+                    <ng-container *ngIf="shop.shopOnwer as smId; else noItem">
+
+                      <ng-container *ngIf="(smId|remoteShopOwnerById|async) as sm; else loading">
+                        <ng-container *ngIf="sm.ownerUser as smUserId; else noItem">
+
+                          <span role="button" *ngIf="smUserId != null && smUserId!= undefined; else noItem"
+                            class="text-primary">
+                            @{{smUserId.name}}
+                          </span>
+                        </ng-container>
+
+
+                      </ng-container>
+                    </ng-container>
+                  </h6>
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-left align-items-baseline border-0">
+                <span class="text-muted mr-1">Manager:</span>
+                <span>
+                  <h6>
+                    <ng-container *ngIf="shop.shopManager as smId; else noItem">
+                      <ng-container *ngIf="(smId|remoteShopManagerById|async) as sm; else loading">
+
+                        <ng-container *ngIf="sm?.userId as smUserId; else noItem">
+
+                          <ng-container *ngIf="(smUserId|remoteUserFromId|async) as us; else loading ">
+                            <span role="button" *ngIf="us != null && us!= undefined; else noItem" class="text-primary">
+                              @{{us.name}}
+                            </span>
+                          </ng-container>
+                        </ng-container>
+
+
+                      </ng-container>
+                    </ng-container>
+                  </h6>
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-left align-items-baseline">
+                <span class="text-muted mr-1">Capacité:</span>
+                <small class="text-muted mr-1">Sacs</small>
+                <span>
+                  <h6>{{shop.capacity}}</h6>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+  </div>
+  <div class="row m-1 mt-3">
+    <div class="col">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Etat</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Stock produits</span>
+            <span>
+              <ng-container *ngIf="(shop._id|remoteShopProductByShopId|async) as shopProducts; else loading">
+                <ng-container *ngFor="let shopProduct of shopProducts">
+                  <span *ngIf="shopProduct.product != null; else noItem"
+                    class="badge badge-pill badge-secondary ml-1 p-2">
+                    <img class="fit-to-text-image mr-1" [src]="shopProduct.product.name|productNameToProductImage"
+                      alt="">
+                    <span class="text-muted">{{shopProduct.product.name}}:</span>
+                    {{shopProduct.inventorOnHand}}
+                  </span>
+                </ng-container>
+              </ng-container>
+            </span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Comandes en cours</span>
+            <span *ngIf="(shop._id|remoteOrderFromShopId|async) as shopOrders">
+              <ng-container *ngIf="shopOrders.length > 0; else noItem">
+
+                <ng-container *ngFor="let so of shopOrders; let i = index">
+                  <span *ngIf="i != 0">•</span>
+                  <strong [routerLink]="['/granted/commands/'+so._id]" role="button" class="text-primary ml-1">
+                    <small>#</small>
+                    {{so._id|codeFormater}}
+                  </strong>
+                </ng-container>
+              </ng-container>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="row m-1 mt-3">
+    <div class="col">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Horaires d'ouverture</h5>
+
+            </div>
+
+            <ul *ngIf="shop.horairedeservice as horaire; else noHoraire" class="list-group list-group-flush">
+              <ng-container *ngIf="horaire.length > 0; else noHoraire">
+                <li *ngFor="let horaireItem of horaire" [ngClass]="{'bg-primary': horaireItem.day|isToday}"
+                  class="list-group-item d-flex justify-content-between align-items-center">
+                  <span [ngClass]="{'text-white': horaireItem.day|isToday, 'text-muted': !horaireItem.day|isToday}"
+                    class="mr-auto d-flex flex-row align-items-center">
+                    <span class="d-flex flex-column">
+                      <span>{{horaireItem.day}}</span>
+                    </span>
+                  </span>
+                  <span role="buton">
+                    <h6 [ngClass]="{'text-white': horaireItem.day|isToday}" class="d-inline">{{horaireItem.startTime}} -
+                      {{horaireItem.endTime}}</h6>
+                  </span>
+                </li>
+              </ng-container>
+
+
+            </ul>
+          </div>
+        </div>
+
+      </div>
+      <div class="row mt-3">
+        <div class="col">
+          <div class="card mb-3">
+            <div class="bg-secondary" style="height: 300px; width: 100%;">
+              <agm-map *ngIf="shop.geoloc; else
+                noMap" style="height: 100%;" [zoom]="14" [latitude]="shop.geoloc.long" [longitude]="shop.geoloc.long">
+                <agm-marker [latitude]="shop.geoloc.long" [longitude]="shop.geoloc.long"></agm-marker>
+              </agm-map>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">Localisation</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                  <span class="text-muted mr-1">Zone:</span>
+
+                  <ng-container *ngIf="false; else noItem">
+                    <!--
+                      <span [ngClass]="{
+                        'badge-warning' : shop.status == 'pending',
+                      'badge-success': shop.status == 'accepted'||shop.status == 'shiped' || shop.status == 'delivered',
+                      'badge-danger': shop.status == 'canceled'||shop.status == 'issue'
+                    }" class="badge badge-pill">{{shop.status}}</span>
+                    -->
+                  </ng-container>
+
+
+                </li>
+                <!--
+                  <li *ngIf="(shop._id|remoteDeliveryFromShopId|async) as delivery"
+                    class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    <span class="text-muted mr-1">Reponse:</span>
+                    <ng-container *ngIf="delivery.accepted == undefined || delivery.accepted == null">
+
+                      <ng-container *ngIf="delivery.whenAssigned|shopDurationToIcon:'30':'60'|async as iconSet">
+                        <span>
+                          Aucune, depuis
+                          <span [ngClass]="[iconSet.color, iconSet.color=='badge-danger'? 'blink':'']"
+                            class="badge d-inline-flex align-items-center badge-pill mr-1 mb-1">
+                            <span
+                              class="mr-1  material-icons fit-text-icon-nd-min">{{iconSet.icon}}</span>{{iconSet.minutes}}
+                            mins
+                          </span>
+                        </span>
+
+
+                      </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngIf="(shop._id|remoteDeliveryFromShopId|async)?.accepted!= undefined">
+                      <span *ngIf="((shop._id|remoteDeliveryFromShopId|async)?.accepted); else notAccepted"
+                        class="material-icons text-success fit-text-icon">
+                        check_circle
+                      </span>
+
+                      <ng-template #notAccepted>
+                        <span class="material-icons text-danger fit-text-icon">
+                          cancel
+                        </span>
+                      </ng-template>
+                    </ng-container>
+
+                  </li>
+
+
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <ng-container *ngIf=" shop.status == 'pending' || shop.status == 'accepted'">
+                      <ng-container *ngIf="(shop._id|remoteDeliveryFromShopId|async) as delivery; else addDelivery">
+                        <button (click)="assignShopToDelivery(shop)" type="button" class="btn btn-primary btn btn-block">
+                          Changer de
+                          livreur</button>
+                      </ng-container>
+
+                      <ng-template #addDelivery>
+                        <button (click)="assignShopToDelivery(shop)" type="button" class="btn btn-primary btn btn-block">
+                          Assigner à un livreur</button>
+                      </ng-template>
+                    </ng-container>
+
+
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="text-muted mr-1">Adresse de livraison:</span>
+                    <h6 role="button">{{shop.shippingAdress}}</h6>
+                  </li>
+                  -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-between align-items-baseline">
+            <span>Historique</span>
+            <span>
+              <small class="text-muted mr-1">Statut actuel: </small>
+              <span [ngClass]="{
+                  'badge-warning' : shop.status == 'pending',
+                'badge-success': shop.status == 'accepted'||shop.status == 'shiped' || shop.status == 'delivered',
+                'badge-danger': shop.status == 'canceled'||shop.status == 'issue'
+              }" class="badge badge-pill pt-2 pb-2 pl-3 pr-3">{{shop.status}}</span>
+            </span>
+          </h5>
+
+        </div>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let hitoricalItem of shop.historical"
+            class="list-group-item d-flex justify-content-between align-items-center">
+            <span class="mr-auto d-flex flex-row align-items-center">
+
+              <span class="d-flex flex-column">
+                <span>{{hitoricalItem.status}}</span>
+                <small class="text-muted ">{{hitoricalItem.created|date:'d MMM yyy, HH:mm':'Africa/Kinshasa'}}</small>
+              </span>
+            </span>
+            <span role="buton">
+              <small class="mr-1 text-muted">Par</small>
+              <h6 [ngClass]="hitoricalItem.by? 'text-primary':'text-muted'" class="d-inline">
+                {{hitoricalItem.by? '@'+(hitoricalItem.by|remoteUserFromId|async)?.name: '- -'}}</h6>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+  <ng-template #loading> <span class="text-muted">Chargement</span>
+
+  </ng-template>
+  <ng-template #noItem> <span class="text-muted">- -</span>
+
+  </ng-template>
+
+  <ng-template #blockLoadingSpinner>
+    <div class="spinner-border text-secondary m-4" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </ng-template>
+
+  <ng-template #noDataBlock>
+    <div class="card mx-auto text-muted align-middle vertically-aligned-partially-box bg-light mb-3"
+      style="max-width: 18rem;">
+      <div class="card-body">
+        <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+            style="top: 6px">block</span> Aucun élément à afficher</h6>
+
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #noHoraire>
+    <div class="card mx-auto text-muted align-middle  bg-light m-4" style="max-width: 18rem;">
+      <div class="card-body">
+        <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+            style="top: 6px">event_busy</span>
+          Aucun horaire rensigné</h6>
+
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #noMap>
+    <div class="card mx-auto shadow-sm text-muted align-middle vertically-aligned-box bg-light mb-3"
+      style="max-width: 18rem;">
+      <div class="card-body">
+        <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+            style="top: 6px">layers_clear</span> Carthographie indisponible</h6>
+
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noShopImage>
+    <span
+      class="material-icons text-muted preview-image-palceholder img-thumbnail mt-3 ml-3 mb-3 float-right">store</span>
+  </ng-template>
+</div>

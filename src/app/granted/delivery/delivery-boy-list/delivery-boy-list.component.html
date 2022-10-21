@@ -1,0 +1,140 @@
+<div class="navbar navbar-expand-md navbar-light bg-white">
+  <span class="navbar-text mr-4">
+    <ng-container *ngIf="renderContext=='normal'">
+      <span class="text-primary">Livraison</span> /
+      <span class="text-primary">Livreurs</span> /
+      <span class="text-muted">{{category$|async}}</span>
+    </ng-container>
+    <ng-container *ngIf="renderContext=='dialog'">
+      <span class="text-muted">{{
+        (availabilityCategory$|async) ? 'En ligne': 'Tous'
+        }}</span>
+    </ng-container>
+
+
+
+
+    <span *ngIf="(selectedDeliveryBoy$|async) != null" class="text-muted"> /</span>
+    {{(selectedDeliveryBoy$|async)?._id|codeFormater}}
+
+  </span>
+  <div *ngIf="renderContext == 'normal'" class="btn-group mr-auto" role="group" aria-label="Basic example">
+    <button #agreed autofocus="autofocus" (click)="setDeliveryBoysCategory('agreed')" type="button"
+      data-toggle="tooltip" title="Agréées" class="btn btn-secondary btn-sm"><span
+        class="material-icons">check_circle</span></button>
+    <button #pending type="button" (click)="setDeliveryBoysCategory('pending')" data-toggle="tooltip" title="En attente"
+      class="btn btn-secondary"><span class="material-icons">hourglass_empty</span></button>
+    <button #rejected type="button" (click)="setDeliveryBoysCategory('rejected')" data-toggle="tooltip"
+      title="Rejettées" class="btn btn-secondary"><span class="material-icons">thumb_down_alt</span></button>
+    <button #banned type="button" (click)="setDeliveryBoysCategory('banned')" data-toggle="tooltip" title="Bannies"
+      class="btn btn-secondary"><span class="material-icons">remove_circle</span></button>
+  </div>
+  <div *ngIf="renderContext == 'dialog'" class="btn-group mr-auto" role="group" aria-label="Basic example">
+    <button #availlable autofocus="autofocus" (click)="setAvaillabilityCategory(true)" type="button"
+      data-toggle="tooltip" title="Agréées" class="btn btn-secondary btn-sm"><span
+        class="material-icons">event_available</span></button>
+    <button #all type="button" (click)="setAvaillabilityCategory(false)" data-toggle="tooltip" title="En attente"
+      class="btn btn-secondary"><span class="material-icons">reorder</span></button>
+  </div>
+  <ul style="display: none;" *ngIf="renderContext == 'normal'" class="nav ml-4">
+    <li class="nav-item mr-1">
+      <button type="button" class="btn btn-primary btn-sm">Primary</button>
+
+    </li>
+    <li class="nav-item mr-1">
+      <button type="button" class="btn btn-secondary btn-sm">Secondary</button>
+
+    </li>
+    <li class="nav-item mr-1">
+      <button type="button" class="btn btn-success btn-sm">Success</button>
+
+    </li>
+    <li class="nav-item mr-1">
+      <button type="button" class="btn btn-danger btn-sm">Danger</button>
+    </li>
+  </ul>
+</div>
+<div [ngClass]="renderContext == 'normal'?'two-nav-content':'content-dialog-big'" class="bg-color overflow-auto">
+  <table *ngIf="(deliveryBoys$|async)?.length>0" class="table table-striped table-hover tableFixHead">
+    <thead>
+      <tr class="table-primary">
+        <th scope="col">Code</th>
+        <th scope="col">Nom</th>
+        <th scope="col">#Charge</th>
+        <th scope="col">Entreprise</th>
+        <th scope="col">Zones</th>
+        <th scope="col">Notation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr (click)="select(deliveryBoy._id)"
+        [ngClass]="{'table-success': deliveryBoy._id.localeCompare((selectedDeliveryBoy$|async)?._id)==0}"
+        *ngFor="let deliveryBoy of deliveryBoys$|async">
+        <td>{{deliveryBoy._id|codeFormater}}</td>
+        <td>
+          <span
+            [ngClass]="  {'badge-success': deliveryBoy.avaliability , 'badge-secondary': !deliveryBoy.avaliability }"
+            class="badge badge-pill mr-1">
+            {{ deliveryBoy.avaliability?'Online': 'Offline' }}
+          </span> {{deliveryBoy.userID.name}}
+        </td>
+        <td>
+          <ng-container *ngIf="deliveryBoy._id|deliverysFromDeliverBoyId|async as deliverys; else loading">
+            <span>{{deliverys.length}} <small class="text-muted">Cmde(s) en crs</small> </span>
+          </ng-container>
+
+        </td>
+
+        <td>
+          <ng-container *ngIf="deliveryBoy.boyOwner|deliverCorpFromDeliverBoyId|async as deliverCorp; else loading">
+            <span class="text-primary" role="button">@{{deliverCorp.entrepriseInfo.name}}</span>
+          </ng-container>
+
+        </td>
+        <td>
+          <ng-container *ngIf="deliveryBoy.zone|remoteZonesFromDeliveryBoyId|async as zones; else loading">
+            <ng-container *ngIf="zones.length > 0; else noItem">
+              <ng-container *ngFor="let zone of zones; let i=index">
+                <span *ngIf="i < 3" class="badge d-inline-flex align-items-center badge-pill badge-primary mr-1 mb-1">
+                  {{zone.name}}
+
+
+                </span>
+
+
+              </ng-container>
+              <span *ngIf="zones.length > 3"
+                class="badge d-inline-flex align-items-center badge-pill badge-secondary mr-1 mb-1">
+                +{{zones.length-3}}
+
+
+              </span>
+            </ng-container>
+
+          </ng-container>
+
+        </td>
+        <td>
+          <ngb-rating [readonly]="true" [max]="5" [rate]="deliveryBoy.rating|ratingMean"></ngb-rating>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div *ngIf="(deliveryBoys$|async)?.length==0"
+    class="card mx-auto text-muted align-middle vertically-aligned-partially-box bg-light mb-3"
+    style="max-width: 18rem;">
+    <div class="card-body">
+      <h6 class="card-title text-center"><span class="material-icons position-relative mr-2"
+          style="top: 6px">block</span> Aucun élément à afficher</h6>
+
+    </div>
+  </div>
+  <ng-template #loading> <span class="text-muted">Chargement</span>
+
+  </ng-template>
+  <ng-template #noItem> <span class="text-muted">- -</span>
+
+  </ng-template>
+</div>

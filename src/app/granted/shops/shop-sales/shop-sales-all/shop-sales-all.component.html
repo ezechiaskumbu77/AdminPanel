@@ -1,0 +1,52 @@
+<div class="bg-white border-bottom d-flex flex-row align-items-center filter-bar border-left border-right">
+  <div class="col-3">
+  </div>
+  <div class="col">
+    <div class="form-row">
+      <div class="col input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">Période</span>
+        </div>
+
+        <input class="form-control" readonly (dateSelect)="onDateSelection($event)" [displayMonths]="2"
+          placeholder="yyyy-mm-dd - yyyy-mm-dd"
+          [value]="(fromSales && toSales)?(fromSales|date:'dd MMM yy')+' - '+(toSales|date:'dd MMM yy'):'- -'"
+          [autoClose]="false" name="dp" ngbDatepicker [dayTemplate]="t" #d="ngbDatepicker">
+        <div class="input-group-append">
+          <button (click)="d.toggle()" class="btn btn-outline-secondary" type="button" id="button-addon2">
+            <span class="material-icons fit-text-icon-nd">insert_invitation</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+  </div>
+</div>
+<div class="row no-gutters">
+  <div class="col-6">
+
+    <app-shop-sales-ppc [shopId]="shopId"></app-shop-sales-ppc>
+  </div>
+  <div class="col-6">
+    <app-shop-sales-others [shopId]="shopId"></app-shop-sales-others>
+  </div>
+
+  <!--
+  <ng-template #content let-modal>
+    <ngb-datepicker #dp (dateSelect)="onDateSelection($event)" [displayMonths]="2" outsideDays="hidden">
+    </ngb-datepicker>
+    <div class="modal-footer">
+      <button type="button" ngbAutofocus class="btn btn-primary" (click)="modal.close('Ok click')">Ok</button>
+    </div>
+
+  </ng-template>
+  -->
+  <ng-template #t let-date let-focused="focused">
+    <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
+      [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
+      (mouseleave)="hoveredDate = null">
+      {{ date.day }}
+    </span>
+  </ng-template>
+</div>
